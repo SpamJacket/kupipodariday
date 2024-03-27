@@ -5,9 +5,15 @@ import {
   UpdateDateColumn,
   Column,
   ManyToOne,
-  OneToMany,
+  ManyToMany,
 } from 'typeorm';
-import { Length, MaxLength, IsUrl } from 'class-validator';
+import {
+  Length,
+  MaxLength,
+  IsUrl,
+  IsString,
+  IsOptional,
+} from 'class-validator';
 import { Wish } from '../../wishes/entities/wish.entity';
 import { User } from '../../users/entities/user.entity';
 
@@ -24,6 +30,7 @@ export class Wishlist {
     type: 'varchar',
     length: 250,
   })
+  @IsString()
   @Length(1, 250)
   name: string;
 
@@ -32,6 +39,8 @@ export class Wishlist {
     length: 1500,
     default: '',
   })
+  @IsOptional()
+  @IsString()
   @MaxLength(1500)
   description: string;
 
@@ -41,9 +50,11 @@ export class Wishlist {
   @IsUrl()
   image: string;
 
-  @OneToMany(() => Wish, (wish) => wish.id)
+  @ManyToMany(() => Wish, (wish) => wish.wishlists)
   items: Wish[];
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.wishlists, {
+    nullable: false,
+  })
   owner: User;
 }

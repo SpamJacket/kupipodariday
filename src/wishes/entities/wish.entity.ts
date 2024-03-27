@@ -6,8 +6,17 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
-import { Length, IsUrl, Min } from 'class-validator';
+import {
+  Length,
+  IsUrl,
+  Min,
+  IsString,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 import { User } from '../../users/entities/user.entity';
 import { Offer } from '../../offers/entities/offer.entity';
 import { Wishlist } from '../../wishlists/entities/wishlist.entity';
@@ -25,6 +34,7 @@ export class Wish {
     type: 'varchar',
     length: 250,
   })
+  @IsString()
   @Length(1, 250)
   name: string;
 
@@ -44,6 +54,7 @@ export class Wish {
     type: 'numeric',
     scale: 2,
   })
+  @IsNumber()
   @Min(1)
   price: number;
 
@@ -52,29 +63,39 @@ export class Wish {
     scale: 2,
     default: 0,
   })
+  @IsOptional()
+  @IsNumber()
   @Min(0)
   raised: number;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.whishes, {
+    nullable: false,
+  })
   owner: User;
 
   @Column({
     type: 'varchar',
     length: 1024,
   })
+  @IsString()
   @Length(1, 2024)
   description: string;
 
-  @OneToMany(() => Offer, (offer) => offer.id)
+  @OneToMany(() => Offer, (offer) => offer.item, {
+    onDelete: 'CASCADE',
+  })
   offers: Offer[];
 
-  @ManyToOne(() => Wishlist, (wishlist) => wishlist.id)
-  wishlist: Wishlist;
+  @ManyToMany(() => Wishlist, (wishlist) => wishlist.items)
+  @JoinTable()
+  wishlists: Wishlist[];
 
   @Column({
     type: 'int',
     default: 0,
   })
+  @IsOptional()
+  @IsNumber()
   @Min(0)
   copied: number;
 }
