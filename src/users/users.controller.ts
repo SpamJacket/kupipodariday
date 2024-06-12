@@ -1,10 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
-import { User } from './entities/user.entity';
+
 import { UsersService } from './users.service';
+import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Wish } from '../wishes/entities/wish.entity';
 import { AuthUser } from '../utils/decorators/auth-user.decorator';
-import { Wish } from 'src/wishes/entities/wish.entity';
-import { selects } from 'src/utils/consts';
+import { selects } from '../utils/consts';
 
 @Controller('users')
 export class UsersController {

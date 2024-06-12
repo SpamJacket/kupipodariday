@@ -3,14 +3,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { createHash } from 'src/utils/hash';
-import { Wish } from 'src/wishes/entities/wish.entity';
-import { ERR_MSG, relations, selects } from 'src/utils/consts';
+import { Wish } from '../wishes/entities/wish.entity';
+import { createHash } from '../utils/hash';
+import { ERR_MSG, relations, selects } from '../utils/consts';
 
 @Injectable()
 export class UsersService {

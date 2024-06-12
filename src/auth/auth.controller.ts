@@ -1,11 +1,12 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersService } from 'src/users/users.service';
+
 import { LocalAuthGuard } from './guard/local-auth.guard';
-import { AuthUser } from 'src/utils/decorators/auth-user.decorator';
-import { User } from 'src/users/entities/user.entity';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { Public } from 'src/utils/decorators/public.decorator';
+import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { AuthUser } from '../utils/decorators/auth-user.decorator';
+import { Public } from '../utils/decorators/public.decorator';
 
 @Controller()
 export class AuthController {

@@ -7,14 +7,15 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+
 import { WishesService } from './wishes.service';
-import { CreateWishDto } from './dto/create-wish.dto';
-import { AuthUser } from 'src/utils/decorators/auth-user.decorator';
-import { User } from 'src/users/entities/user.entity';
 import { Wish } from './entities/wish.entity';
+import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
-import { Public } from 'src/utils/decorators/public.decorator';
-import { relations } from 'src/utils/consts';
+import { User } from '../users/entities/user.entity';
+import { AuthUser } from '../utils/decorators/auth-user.decorator';
+import { Public } from '../utils/decorators/public.decorator';
+import { relations } from '../utils/consts';
 
 @Controller('wishes')
 export class WishesController {

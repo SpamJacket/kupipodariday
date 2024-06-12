@@ -5,13 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from '../config/configuration';
 import { DbConfigFactory } from '../config/db-config.factory';
 
+import { AuthModule } from '../auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { OffersModule } from '../offers/offers.module';
 import { UsersModule } from '../users/users.module';
 import { WishesModule } from '../wishes/wishes.module';
-import { OffersModule } from '../offers/offers.module';
 import { WishlistsModule } from '../wishlists/wishlists.module';
-import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [

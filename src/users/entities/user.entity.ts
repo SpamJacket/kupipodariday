@@ -7,10 +7,11 @@ import {
   OneToMany,
 } from 'typeorm';
 import { IsString, Length, IsUrl, IsEmail, IsOptional } from 'class-validator';
-import { Wish } from '../../wishes/entities/wish.entity';
-import { Offer } from '../../offers/entities/offer.entity';
-import { Wishlist } from '../../wishlists/entities/wishlist.entity';
 import { Transform } from 'class-transformer';
+
+import { Offer } from '../../offers/entities/offer.entity';
+import { Wish } from '../../wishes/entities/wish.entity';
+import { Wishlist } from '../../wishlists/entities/wishlist.entity';
 
 @Entity()
 export class User {

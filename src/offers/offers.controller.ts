@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+
 import { OffersService } from './offers.service';
-import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
-import { AuthUser } from 'src/utils/decorators/auth-user.decorator';
-import { User } from 'src/users/entities/user.entity';
-import { relations } from 'src/utils/consts';
+import { CreateOfferDto } from './dto/create-offer.dto';
+import { User } from '../users/entities/user.entity';
+import { AuthUser } from '../utils/decorators/auth-user.decorator';
+import { relations } from '../utils/consts';
 
 @Controller('offers')
 export class OffersController {

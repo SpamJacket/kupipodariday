@@ -14,8 +14,9 @@ import {
   IsString,
   IsOptional,
 } from 'class-validator';
-import { Wish } from '../../wishes/entities/wish.entity';
+
 import { User } from '../../users/entities/user.entity';
+import { Wish } from '../../wishes/entities/wish.entity';
 
 @Entity()
 export class Wishlist {

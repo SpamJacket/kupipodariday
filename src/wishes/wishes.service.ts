@@ -11,11 +11,12 @@ import {
   UpdateResult,
 } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { Wish } from './entities/wish.entity';
 import { CreateWishDto } from './dto/create-wish.dto';
-import { User } from 'src/users/entities/user.entity';
 import { UpdateWishDto } from './dto/update-wish.dto';
-import { ERR_MSG, relations } from 'src/utils/consts';
+import { User } from '../users/entities/user.entity';
+import { ERR_MSG, relations } from '../utils/consts';
 
 @Injectable()
 export class WishesService {

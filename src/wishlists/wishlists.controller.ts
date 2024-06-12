@@ -7,13 +7,14 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+
 import { WishlistsService } from './wishlists.service';
 import { Wishlist } from './entities/wishlist.entity';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
-import { AuthUser } from 'src/utils/decorators/auth-user.decorator';
-import { User } from 'src/users/entities/user.entity';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
-import { relations } from 'src/utils/consts';
+import { User } from '../users/entities/user.entity';
+import { AuthUser } from '../utils/decorators/auth-user.decorator';
+import { relations } from '../utils/consts';
 
 @Controller('wishlists')
 export class WishlistsController {

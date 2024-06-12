@@ -4,12 +4,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Offer } from './entities/offer.entity';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+
+import { Offer } from './entities/offer.entity';
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { WishesService } from 'src/wishes/wishes.service';
-import { User } from 'src/users/entities/user.entity';
-import { ERR_MSG, relations } from 'src/utils/consts';
+import { User } from '../users/entities/user.entity';
+import { WishesService } from '../wishes/wishes.service';
+import { ERR_MSG, relations } from '../utils/consts';
 
 @Injectable()
 export class OffersService {
