@@ -14,6 +14,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Wish } from './entities/wish.entity';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Public } from 'src/utils/decorators/public.decorator';
+import { relations } from 'src/utils/consts';
 
 @Controller('wishes')
 export class WishesController {
@@ -33,7 +34,7 @@ export class WishesController {
     return this.wishesService.findMany({
       order: { createdAt: 'DESC' },
       take: 40,
-      relations: ['owner', 'offers'],
+      relations: relations.wishes,
     });
   }
 
@@ -43,7 +44,7 @@ export class WishesController {
     return this.wishesService.findMany({
       order: { copied: 'DESC' },
       take: 20,
-      relations: ['owner', 'offers'],
+      relations: relations.wishes,
     });
   }
 

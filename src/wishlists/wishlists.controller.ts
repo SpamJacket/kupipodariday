@@ -13,6 +13,7 @@ import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { AuthUser } from 'src/utils/decorators/auth-user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+import { relations } from 'src/utils/consts';
 
 @Controller('wishlists')
 export class WishlistsController {
@@ -21,7 +22,7 @@ export class WishlistsController {
   @Get()
   async getWishlists(): Promise<Wishlist[]> {
     return this.wishlistsService.findMany({
-      relations: ['owner', 'items'],
+      relations: relations.wishlists,
     });
   }
 

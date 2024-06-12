@@ -4,6 +4,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthUser } from '../utils/decorators/auth-user.decorator';
 import { Wish } from 'src/wishes/entities/wish.entity';
+import { selects } from 'src/utils/consts';
 
 @Controller('users')
 export class UsersController {
@@ -13,15 +14,7 @@ export class UsersController {
   async findCurrentUser(@AuthUser() user: User): Promise<User> {
     return this.usersService.findOne({
       where: { id: user.id },
-      select: {
-        email: true,
-        username: true,
-        id: true,
-        avatar: true,
-        about: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: selects.userWithEmail,
     });
   }
 
@@ -52,15 +45,7 @@ export class UsersController {
   async findManyUsers(@Body('query') query: string): Promise<User[]> {
     return this.usersService.findMany({
       where: [{ email: query }, { username: query }],
-      select: {
-        email: true,
-        username: true,
-        id: true,
-        avatar: true,
-        about: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: selects.userWithEmail,
     });
   }
 }

@@ -15,6 +15,7 @@ import { Wish } from './entities/wish.entity';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { User } from 'src/users/entities/user.entity';
 import { UpdateWishDto } from './dto/update-wish.dto';
+import { ERR_MSG, relations } from 'src/utils/consts';
 
 @Injectable()
 export class WishesService {
@@ -28,7 +29,7 @@ export class WishesService {
   }
 
   async findOneById(id: number): Promise<Wish> {
-    return this.findOne({ where: { id }, relations: ['owner', 'offers'] });
+    return this.findOne({ where: { id }, relations: relations.wishes });
   }
 
   async findMany(query: FindManyOptions<Wish>): Promise<Wish[]> {
@@ -51,18 +52,13 @@ export class WishesService {
   ): Promise<Wish> {
     const wish = await this.findOneById(wishId);
 
-    if (!wish)
-      throw new NotFoundException(
-        'Может вы хотели обновить что-то другое? Этого нет',
-      );
+    if (!wish) throw new NotFoundException(ERR_MSG.WISH.NOT_FOUND_FOR_UPDATE);
 
     if (wish.owner.id !== userId)
-      throw new ForbiddenException('Нельзя обновлять чужие подарки!');
+      throw new ForbiddenException(ERR_MSG.WISH.UPDATE_SOMEONE_GIFT);
 
     if (updateWishDto.price && wish.offers.length > 0) {
-      throw new ForbiddenException(
-        'Этот подарок уже поддержали, не стоит его обновлять',
-      );
+      throw new ForbiddenException(ERR_MSG.WISH.UPDATE_RAISED_GIFT);
     }
 
     return this.wishesRepository.save({ ...wish, ...updateWishDto });
@@ -76,10 +72,10 @@ export class WishesService {
     const wish = await this.findOneById(wishId);
 
     if (!wish) {
-      throw new NotFoundException('Этого подарка уже нет');
+      throw new NotFoundException(ERR_MSG.WISH.ALREADY_DELETED);
     }
     if (wish.owner.id != userId) {
-      throw new ForbiddenException('Нельзя удалять чужие подарки!');
+      throw new ForbiddenException(ERR_MSG.WISH.DELETE_SOMEONE_GIFT);
     }
 
     await this.wishesRepository.delete(wishId);
@@ -91,7 +87,7 @@ export class WishesService {
     const wish = await this.findOneById(wishId);
 
     if (!wish) {
-      throw new NotFoundException('Нельзя скопировать то, чего нет');
+      throw new NotFoundException(ERR_MSG.WISH.EMPTY_COPIED);
     }
 
     const copiedWish = await this.findOne({
@@ -102,7 +98,7 @@ export class WishesService {
     });
 
     if (copiedWish) {
-      throw new ConflictException('Вы уже скопировали этот подарок');
+      throw new ConflictException(ERR_MSG.WISH.ALREADY_COPIED);
     }
 
     const wishCopy: CreateWishDto = {

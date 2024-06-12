@@ -4,6 +4,7 @@ import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
 import { AuthUser } from 'src/utils/decorators/auth-user.decorator';
 import { User } from 'src/users/entities/user.entity';
+import { relations } from 'src/utils/consts';
 
 @Controller('offers')
 export class OffersController {
@@ -12,25 +13,7 @@ export class OffersController {
   @Get()
   async getOffers(): Promise<Offer[]> {
     return this.offersService.findMany({
-      relations: {
-        item: {
-          owner: true,
-          offers: true,
-        },
-        user: {
-          wishes: {
-            owner: true,
-            offers: true,
-          },
-          offers: {
-            user: true,
-          },
-          wishlists: {
-            owner: true,
-            items: true,
-          },
-        },
-      },
+      relations: relations.allOffers,
     });
   }
 

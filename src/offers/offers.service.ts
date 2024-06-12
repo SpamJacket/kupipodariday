@@ -9,6 +9,7 @@ import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { WishesService } from 'src/wishes/wishes.service';
 import { User } from 'src/users/entities/user.entity';
+import { ERR_MSG, relations } from 'src/utils/consts';
 
 @Injectable()
 export class OffersService {
@@ -25,28 +26,10 @@ export class OffersService {
   async findOneById(id: number): Promise<Offer> {
     const offer = await this.findOne({
       where: { id },
-      relations: {
-        item: {
-          owner: true,
-          offers: true,
-        },
-        user: {
-          wishes: {
-            owner: true,
-            offers: true,
-          },
-          offers: {
-            user: true,
-          },
-          wishlists: {
-            owner: true,
-            items: true,
-          },
-        },
-      },
+      relations: relations.allOffers,
     });
 
-    if (!offer) throw new NotFoundException('Такого нет, попробуй другое');
+    if (!offer) throw new NotFoundException(ERR_MSG.OFFER.NOT_FOUND);
 
     return offer;
   }
@@ -58,22 +41,19 @@ export class OffersService {
   async create(createOfferDto: CreateOfferDto, user: User): Promise<Offer> {
     const wish = await this.wishesService.findOneById(createOfferDto.itemId);
 
-    if (!wish)
-      throw new NotFoundException(
-        'Как можно поддержать ничего? Сначала определись',
-      );
+    if (!wish) throw new NotFoundException(ERR_MSG.OFFER.NOT_FOUND_WISH);
 
     if (wish.owner.id === user.id)
-      throw new ForbiddenException('Это что самолайк? Не надо так');
+      throw new ForbiddenException(ERR_MSG.OFFER.SUPPORT_MYSELF);
 
     if (
       createOfferDto.amount > wish.price ||
       createOfferDto.amount > wish.price - wish.raised
     )
-      throw new ForbiddenException('Деньги лишние что-ли? Оставь себе немного');
+      throw new ForbiddenException(ERR_MSG.OFFER.TOO_MUCH);
 
     if (wish.price === wish.raised)
-      throw new ForbiddenException('Уже не надо, спасибо');
+      throw new ForbiddenException(ERR_MSG.OFFER.COLLECTED);
 
     await this.wishesService.updateWishRaise(
       wish.id,

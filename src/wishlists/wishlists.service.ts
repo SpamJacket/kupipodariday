@@ -11,6 +11,7 @@ import { User } from 'src/users/entities/user.entity';
 import { WishesService } from 'src/wishes/wishes.service';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+import { ERR_MSG, relations } from 'src/utils/consts';
 
 @Injectable()
 export class WishlistsService {
@@ -25,7 +26,7 @@ export class WishlistsService {
   }
 
   async findOneById(id: number): Promise<Wishlist> {
-    return this.findOne({ where: { id }, relations: ['owner', 'items'] });
+    return this.findOne({ where: { id }, relations: relations.wishlists });
   }
 
   async findMany(query: FindManyOptions<Wishlist>): Promise<Wishlist[]> {
@@ -59,11 +60,11 @@ export class WishlistsService {
     const wishlist = await this.findOneById(wishId);
 
     if (!wishlist) {
-      throw new NotFoundException('Этого списка нет');
+      throw new NotFoundException(ERR_MSG.WISHLIST.NOT_FOUND);
     }
 
     if (wishlist.owner.id !== userId) {
-      throw new ForbiddenException('Нельзя обновлять чужие списки!');
+      throw new ForbiddenException(ERR_MSG.WISHLIST.UPDATE_SOMEONE_WISHLIST);
     }
 
     const wishes: Wish[] = [];
@@ -90,10 +91,10 @@ export class WishlistsService {
     const wishlist = await this.findOneById(wishId);
 
     if (!wishlist) {
-      throw new NotFoundException('Этого списка нет');
+      throw new NotFoundException(ERR_MSG.WISHLIST.NOT_FOUND);
     }
     if (wishlist.owner.id !== userId) {
-      throw new ForbiddenException('Нельзя удалять чужие списки!');
+      throw new ForbiddenException(ERR_MSG.WISHLIST.DELETE_SOMEONE_WISHLIST);
     }
 
     this.wishlistsRepository.delete(wishId);

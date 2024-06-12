@@ -10,6 +10,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { createHash } from 'src/utils/hash';
 import { Wish } from 'src/wishes/entities/wish.entity';
+import { ERR_MSG, relations, selects } from 'src/utils/consts';
 
 @Injectable()
 export class UsersService {
@@ -37,7 +38,7 @@ export class UsersService {
       },
     });
 
-    if (!user) throw new NotFoundException('Таких тут нет');
+    if (!user) throw new NotFoundException(ERR_MSG.USER.NOT_FOUND);
 
     return user;
   }
@@ -49,31 +50,11 @@ export class UsersService {
     const user = await this.findOne({
       where: { username },
       relations: isCurrentUser
-        ? {
-            wishes: {
-              owner: true,
-              offers: true,
-            },
-          }
-        : {
-            wishes: {
-              owner: true,
-              offers: {
-                item: {
-                  owner: true,
-                  offers: {
-                    item: {
-                      owner: true,
-                      offers: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
+        ? relations.currentUserWishes
+        : relations.userWishes,
     });
 
-    if (!user) throw new NotFoundException('Таких тут нет');
+    if (!user) throw new NotFoundException(ERR_MSG.USER.NOT_FOUND);
 
     return user.wishes;
   }
@@ -87,14 +68,14 @@ export class UsersService {
       !isSameEmail &&
       (await this.findOne({ where: { email: updateUserDto.email } }))
     )
-      throw new ConflictException('Пользователь с таким email уже существует');
+      throw new ConflictException(ERR_MSG.USER.EMAIL_CONFLICT);
 
     if (
       updateUserDto.username &&
       !isSameUsername &&
       (await this.findOne({ where: { username: updateUserDto.username } }))
     )
-      throw new ConflictException('Пользователь с таким именем уже существует');
+      throw new ConflictException(ERR_MSG.USER.USERNAME_CONFLICT);
 
     const { password } = updateUserDto;
 
@@ -105,15 +86,7 @@ export class UsersService {
       .then((updatedUser) =>
         this.findOne({
           where: { id: updatedUser.id },
-          select: {
-            email: true,
-            username: true,
-            id: true,
-            avatar: true,
-            about: true,
-            createdAt: true,
-            updatedAt: true,
-          },
+          select: selects.userWithEmail,
         }),
       );
   }
@@ -123,9 +96,7 @@ export class UsersService {
       (await this.findOne({ where: { email: createUserDto.email } })) ||
       (await this.findOne({ where: { username: createUserDto.username } }))
     )
-      throw new ConflictException(
-        'Пользователь с таким email или username уже зарегистрирован',
-      );
+      throw new ConflictException(ERR_MSG.USER.SIGNUP_CONFLICT);
 
     const { password } = createUserDto;
     const user = this.usersRepository.create({
@@ -136,15 +107,7 @@ export class UsersService {
     return this.usersRepository.save(user).then((newUser) =>
       this.findOne({
         where: { id: newUser.id },
-        select: {
-          email: true,
-          username: true,
-          id: true,
-          avatar: true,
-          about: true,
-          createdAt: true,
-          updatedAt: true,
-        },
+        select: selects.userWithEmail,
       }),
     );
   }
