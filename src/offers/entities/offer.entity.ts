@@ -7,6 +7,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { Min, IsNumber, IsBoolean, IsOptional } from 'class-validator';
+
 import { User } from '../../users/entities/user.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
 

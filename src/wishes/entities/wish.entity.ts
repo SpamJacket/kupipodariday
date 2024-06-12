@@ -31,22 +31,17 @@ export class Wish {
   updatedAt: Date;
 
   @Column({
-    type: 'varchar',
     length: 250,
   })
   @IsString()
   @Length(1, 250)
   name: string;
 
-  @Column({
-    type: 'varchar',
-  })
+  @Column()
   @IsUrl()
   link: string;
 
-  @Column({
-    type: 'varchar',
-  })
+  @Column()
   @IsUrl()
   image: string;
 
@@ -68,13 +63,12 @@ export class Wish {
   @Min(0)
   raised: number;
 
-  @ManyToOne(() => User, (user) => user.whishes, {
+  @ManyToOne(() => User, (user) => user.wishes, {
     nullable: false,
   })
   owner: User;
 
   @Column({
-    type: 'varchar',
     length: 1024,
   })
   @IsString()

@@ -27,7 +27,6 @@ export class Wishlist {
   updatedAt: Date;
 
   @Column({
-    type: 'varchar',
     length: 250,
   })
   @IsString()
@@ -35,7 +34,6 @@ export class Wishlist {
   name: string;
 
   @Column({
-    type: 'varchar',
     length: 1500,
     default: '',
   })
@@ -44,9 +42,7 @@ export class Wishlist {
   @MaxLength(1500)
   description: string;
 
-  @Column({
-    type: 'varchar',
-  })
+  @Column()
   @IsUrl()
   image: string;
 

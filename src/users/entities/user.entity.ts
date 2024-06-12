@@ -22,26 +22,23 @@ export class User {
   updatedAt: Date;
 
   @Column({
-    type: 'varchar',
-    length: 30,
+    length: 64,
     unique: true,
   })
   @IsString()
-  @Length(2, 30)
+  @Length(1, 64)
   username: string;
 
   @Column({
-    type: 'varchar',
     length: 200,
     default: 'Пока ничего не рассказал о себе',
   })
   @IsOptional()
   @IsString()
-  @Length(2, 200)
+  @Length(0, 200)
   about: string;
 
   @Column({
-    type: 'varchar',
     default: 'https://i.pravatar.cc/300',
   })
   @IsOptional()
@@ -49,24 +46,24 @@ export class User {
   avatar: string;
 
   @Column({
-    type: 'varchar',
     unique: true,
+    select: false,
   })
   @IsEmail()
   @Transform((param) => param.value.toLowerCase())
   email: string;
 
   @Column({
-    type: 'varchar',
+    select: false,
   })
   @IsString()
-  @Length(8, 64)
+  @Length(2, 64)
   password: string;
 
   @OneToMany(() => Wish, (wish) => wish.owner, {
     onDelete: 'CASCADE',
   })
-  whishes: Wish[];
+  wishes: Wish[];
 
   @OneToMany(() => Offer, (offer) => offer.user, {
     onDelete: 'CASCADE',

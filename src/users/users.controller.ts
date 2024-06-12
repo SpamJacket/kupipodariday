@@ -1,47 +1,66 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
+import { AuthUser } from '../utils/decorators/auth-user.decorator';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() user: CreateUserDto): Promise<InsertResult> {
-    return this.usersService.create(user);
+  @Get('me')
+  async findCurrentUser(@AuthUser() user: User): Promise<User> {
+    return this.usersService.findOne({
+      where: { id: user.id },
+      select: {
+        email: true,
+        username: true,
+        id: true,
+        avatar: true,
+        about: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
-  @Get()
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  @Get('me/wishes')
+  async getCurrentUserWishes(@AuthUser() user: User): Promise<Wish[]> {
+    return this.usersService.getUserWishes(user.username, true);
   }
 
-  @Get(':id')
-  findOne(@Param('id') userId: string): Promise<User> {
-    return this.usersService.findOne(+userId);
+  @Patch('me')
+  async updateCurrentUser(
+    @AuthUser() user: User,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.update(user, updateUserDto);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') userId: string,
-    @Body() updatedUser: UpdateUserDto,
-  ): Promise<UpdateResult> {
-    return this.usersService.update(+userId, updatedUser);
+  @Get(':username')
+  async findUserByUsername(@Param('username') username: string): Promise<User> {
+    return this.usersService.findUserByUsername(username);
   }
 
-  @Delete(':id')
-  remove(@Param('id') userId: string): Promise<DeleteResult> {
-    return this.usersService.remove(+userId);
+  @Get(':username/wishes')
+  async getUserWishes(@Param('username') username: string): Promise<Wish[]> {
+    return this.usersService.getUserWishes(username, false);
+  }
+
+  @Post('find')
+  async findManyUsers(@Body('query') query: string): Promise<User[]> {
+    return this.usersService.findMany({
+      where: [{ email: query }, { username: query }],
+      select: {
+        email: true,
+        username: true,
+        id: true,
+        avatar: true,
+        about: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 }

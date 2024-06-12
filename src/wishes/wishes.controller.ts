@@ -1,47 +1,76 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { Wish } from './entities/wish.entity';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
+import { AuthUser } from 'src/utils/decorators/auth-user.decorator';
+import { User } from 'src/users/entities/user.entity';
+import { Wish } from './entities/wish.entity';
 import { UpdateWishDto } from './dto/update-wish.dto';
-import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
+import { Public } from 'src/utils/decorators/public.decorator';
 
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
   @Post()
-  create(@Body() wish: CreateWishDto): Promise<InsertResult> {
-    return this.wishesService.create(wish);
+  async createWish(
+    @Body() createWishDto: CreateWishDto,
+    @AuthUser() user: User,
+  ) {
+    this.wishesService.create(user, createWishDto);
   }
 
-  @Get()
-  findAll(): Promise<Wish[]> {
-    return this.wishesService.findAll();
+  @Public()
+  @Get('last')
+  async getLastWishes(): Promise<Wish[]> {
+    return this.wishesService.findMany({
+      order: { createdAt: 'DESC' },
+      take: 40,
+      relations: ['owner', 'offers'],
+    });
+  }
+
+  @Public()
+  @Get('top')
+  async getTopWishes(): Promise<Wish[]> {
+    return this.wishesService.findMany({
+      order: { copied: 'DESC' },
+      take: 20,
+      relations: ['owner', 'offers'],
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') wishId: string): Promise<Wish> {
-    return this.wishesService.findOne(+wishId);
+  async findWishById(@Param('id') id: number): Promise<Wish> {
+    return this.wishesService.findOneById(id);
   }
 
   @Patch(':id')
-  update(
-    @Param('id') wishId: string,
-    @Body() updatedWish: UpdateWishDto,
-  ): Promise<UpdateResult> {
-    return this.wishesService.update(+wishId, updatedWish);
+  async updateWishById(
+    @Param('id') id: number,
+    @Body() updateWishDto: UpdateWishDto,
+    @AuthUser() user: User,
+  ) {
+    this.wishesService.update(id, updateWishDto, user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') wishId: string): Promise<DeleteResult> {
-    return this.wishesService.remove(+wishId);
+  async deleteWishById(
+    @Param('id') id: number,
+    @AuthUser() user: User,
+  ): Promise<Wish> {
+    return this.wishesService.delete(id, user.id);
+  }
+
+  @Post(':id/copy')
+  async copyWishById(@Param('id') id: number, @AuthUser() user: User) {
+    return this.wishesService.copy(id, user);
   }
 }
